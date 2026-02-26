@@ -5,16 +5,105 @@
     font-display: swap;
 }
 
+/* ===== 기본 레이아웃 ===== */
+
 body {
     margin: 0;
     padding: 0;
     font-family: Paperozi;
 }
 
+#pageHeader {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: 30px;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
 .sponsor-section {
     padding: 20px 20px 0 20px;
     overflow: hidden;
 }
+
+/* ===== 슬라이더 ===== */
+
+.slider-container {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    aspect-ratio: 16 / 9;
+    touch-action: pan-y;
+    user-select: none;
+}
+
+/* 슬라이드 1개일 때 드래그/슬라이드 비활성화 */
+.slider-container.no-slider {
+    touch-action: auto;
+    user-select: auto;
+    pointer-events: none;
+}
+
+.slider-wrapper {
+    display: flex;
+    height: 100%;
+    transform: translateX(0);
+    transition: transform 0.3s ease-out;
+    will-change: transform;
+}
+
+.no-slider .slider-wrapper {
+    touch-action: auto;
+    pointer-events: auto;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto;
+}
+
+.slide {
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+.pagination-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dot.active {
+    background-color: white;
+}
+
+/* ===== 섹션 이미지 (슬라이더 외 구분 이미지) ===== */
 
 .sponsor-image {
     width: 100%;
@@ -49,52 +138,7 @@ body {
     object-position: center;
 }
 
-.slider-container {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    aspect-ratio: 16 / 9;
-    touch-action: pan-y;
-    user-select: none;
-}
-
-.slider-wrapper {
-    display: flex;
-    height: 100%;
-    transform: translateX(0);
-    will-change: transform;
-    transition: transform 0.5s ease-in-out;
-}
-
-.slide {
-    height: 100%;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-.pagination-dots {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-}
-
-.dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.dot.active {
-    background-color: white;
-}
+/* ===== 검색 ===== */
 
 .search-container {
     display: flex;
@@ -129,6 +173,8 @@ body {
     cursor: pointer;
 }
 
+/* ===== 후원자 테이블 ===== */
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -158,6 +204,8 @@ td {
     color: white;
 }
 
+/* ===== 알림 ===== */
+
 #notification {
     position: fixed;
     top: 50%;
@@ -172,6 +220,8 @@ td {
     transition: opacity 0.5s ease-in-out;
 }
 
+/* ===== 검색 결과 내비게이션 ===== */
+
 #resultNavigation {
     position: fixed;
     bottom: 20px;
@@ -181,12 +231,11 @@ td {
     color: white;
     padding: 10px;
     border-radius: 5px;
-    display: none;  /* 처음에는 숨김 상태 */
-    white-space: nowrap; /* 줄바꿈 방지 */
-    display: none;  /* 이중으로 적용하여 확실히 숨김 */
-    align-items: center; /* 세로 중앙 정렬 */
-    gap: 5px;      /* 요소들 사이 간격 */
-    z-index: 1000; /* 다른 요소들 위에 표시 */
+    display: none;
+    white-space: nowrap;
+    align-items: center;
+    gap: 5px;
+    z-index: 1000;
 }
 
 #resultNavigation button {
@@ -199,6 +248,19 @@ td {
     cursor: pointer;
     margin: 0 5px;
 }
+
+#closeNavigation {
+    padding: 5px 10px;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* ===== TOP 버튼 ===== */
 
 #topButton {
     position: fixed;
@@ -222,39 +284,8 @@ td {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.nav-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
+/* ===== 웰컴 오버레이 ===== */
 
-.nav-button {
-    width: auto;
-    padding: 15px;
-    margin: 0 5%;
-    font-size: 16px;
-    background-color: white;
-    color: black;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: background-color 0.3s;
-}
-
-#closeNavigation {
-    padding: 5px 10px;
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-}
-
-/* 초기화면 오버레이 */
 .welcome-overlay {
     position: fixed;
     top: 0;
@@ -319,10 +350,38 @@ td {
     transition: opacity 1s ease-out, visibility 1s ease-out;
 }
 
+/* ===== 네비게이션 버튼 ===== */
+
+.nav-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.nav-button {
+    width: auto;
+    padding: 15px;
+    margin: 0 5%;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+/* ===== 애니메이션 ===== */
+
 @keyframes bounce {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(-10px);
     }
+
     50% {
         transform: translateY(0);
     }
@@ -333,78 +392,9 @@ td {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* 헤더 */
-#pageHeader {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: white;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    height: 30px;
-}
-
-.header-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* 슬라이더 */
-.slider-container {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    aspect-ratio: 16 / 9;
-    touch-action: none;
-    user-select: none;
-}
-
-.slider-wrapper {
-    display: flex;
-    height: 100%;
-    transform: translateX(0);
-    will-change: transform;
-    touch-action: none;
-}
-
-.slide {
-    width: calc(100% / var(--total-slides));
-    height: 100%;
-    object-fit: cover;
-    flex-shrink: 0;
-    pointer-events: none;
-}
-
-.pagination-dots {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-}
-
-.dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.dot.active {
-    background-color: white;
 }
