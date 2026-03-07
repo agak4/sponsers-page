@@ -1,3 +1,5 @@
+// ===== 상태 =====
+
 let currentResultIndex = 0;
 let searchResults = [];
 
@@ -179,23 +181,27 @@ function buildSliderSection(sliderImages) {
     const sliderWrapper = document.createElement('div');
     sliderWrapper.className = 'slider-wrapper';
 
+    const fragment = document.createDocumentFragment();
     sliderImages.forEach(src => {
         const img = document.createElement('img');
         img.src = src;
         img.className = 'slide cover-image';
         img.draggable = false;
-        sliderWrapper.appendChild(img);
+        fragment.appendChild(img);
     });
+    sliderWrapper.appendChild(fragment);
 
     if (sliderImages.length > 1) {
         const paginationDots = document.createElement('div');
         paginationDots.className = 'pagination-dots';
+        const dotFragment = document.createDocumentFragment();
         sliderImages.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.className = 'dot';
             dot.setAttribute('data-index', index);
-            paginationDots.appendChild(dot);
+            dotFragment.appendChild(dot);
         });
+        paginationDots.appendChild(dotFragment);
         sliderContainer.appendChild(paginationDots);
     }
 
@@ -203,12 +209,12 @@ function buildSliderSection(sliderImages) {
     return { sliderContainer, sliderWrapper };
 }
 
-function buildSectionImage(groupIndex) {
+function buildSectionImage(imageIndex) {
     const imageDiv = document.createElement('div');
     imageDiv.className = 'sponsor-image';
     const img = document.createElement('img');
-    img.src = `images/image${groupIndex.toString().padStart(2, '0')}.jpg`;
-    img.alt = `사진 ${groupIndex}`;
+    img.src = `images/image${imageIndex.toString().padStart(2, '0')}.jpg`;
+    img.alt = `사진 ${imageIndex}`;
     img.className = 'cover-image';
     imageDiv.appendChild(img);
     return imageDiv;
@@ -217,38 +223,66 @@ function buildSectionImage(groupIndex) {
 function buildSponsorTable(sponsors) {
     const table = document.createElement('table');
     table.className = 'sponsor-table';
+    const tbody = document.createDocumentFragment();
     for (let i = 0; i < sponsors.length; i += 3) {
-        const row = table.insertRow();
+        const row = document.createElement('tr');
         for (let j = 0; j < 3 && i + j < sponsors.length; j++) {
-            row.insertCell().textContent = sponsors[i + j];
+            const cell = document.createElement('td');
+            const span = document.createElement('span');
+            span.className = 'nickname';
+            span.textContent = sponsors[i + j];
+            cell.appendChild(span);
+            row.appendChild(cell);
         }
+        tbody.appendChild(row);
     }
+    table.appendChild(tbody);
     return table;
 }
 
-function wrapNicknamesInSpan() {
-    document.querySelectorAll('.sponsor-table td').forEach(cell => {
-        cell.innerHTML = `<span class="nickname">${cell.textContent}</span>`;
-    });
+function calculateSponsorsPerGroup(totalSponsors, totalImages) {
+    // totalImages: 슬라이더(1) + 일반 이미지 수
+    // groupCount = totalImages
+    if (totalImages <= 1) return 99;
+
+    // (groupCount - 1) * X + 15 <= totalSponsors
+    // X <= (totalSponsors - 15) / (groupCount - 1)
+    let maxSponsors = Math.floor((totalSponsors - 15) / (totalImages - 1));
+
+    let optimized = Math.floor(maxSponsors / 3) * 3;
+
+    return Math.max(optimized, 15);
 }
 
 async function loadSponsors() {
     try {
         const allSponsors = window.sponsorsData.sponsors || [];
-        const container = document.getElementById('sponsorContainer');
-        const sponsorsPerGroup = 99;
-        const groupCount = Math.ceil(allSponsors.length / sponsorsPerGroup);
+        const totalSponsors = allSponsors.length;
 
-        const sliderImageCount = 3;
-        const sliderImages = Array.from({ length: sliderImageCount }, (_, i) =>
-            `images/sliderimage${(i + 1).toString().padStart(2, '0')}.jpg`
-        );
+        const imageFiles = [
+            'image01.jpg', 'image02.jpg', 'image03.jpg', 'image04.jpg',
+            'image05.jpg', 'image06.jpg', 'image07.jpg', 'image08.jpg', 'image09.jpg'
+        ];
+        const normalImageCount = imageFiles.length;
+        const totalGroups = normalImageCount + 1;
+
+        const sponsorsPerGroup = calculateSponsorsPerGroup(totalSponsors, totalGroups);
+
+        console.log(`총 후원자 수: ${totalSponsors}`);
+        console.log(`일반 이미지 수: ${normalImageCount}`);
+        console.log(`계산된 그룹당 후원자 수: ${sponsorsPerGroup}`);
+
+        const container = document.getElementById('sponsorContainer');
+
+        // 슬라이더 이미지 설정 (sliderimage01.jpg 등 탐색)
+        const sliderImages = ['images/sliderimage01.jpg'];
 
         let sliderWrapper = null;
+        const pageFragment = document.createDocumentFragment();
 
-        for (let groupIndex = 0; groupIndex < groupCount; groupIndex++) {
+        for (let groupIndex = 0; groupIndex < totalGroups; groupIndex++) {
             const section = document.createElement('div');
-            section.className = `sponsor-section ${groupIndex}`;
+            section.className = `sponsor-section group-${groupIndex}`;
 
             if (groupIndex === 0) {
                 const { sliderContainer, sliderWrapper: wrapper } = buildSliderSection(sliderImages);
@@ -263,16 +297,22 @@ async function loadSponsors() {
 
                 section.appendChild(sliderContainer);
                 section.appendChild(searchContainer);
-            } else if (groupIndex + 1 < groupCount) {
+            } else {
                 section.appendChild(buildSectionImage(groupIndex));
             }
 
-            const groupSponsors = allSponsors.slice(groupIndex * sponsorsPerGroup, (groupIndex + 1) * sponsorsPerGroup);
-            section.appendChild(buildSponsorTable(groupSponsors));
-            container.appendChild(section);
+            const startIdx = groupIndex * sponsorsPerGroup;
+            // 마지막 그룹인 경우 남은 모든 후원자를 표시
+            const endIdx = (groupIndex === totalGroups - 1) ? totalSponsors : (groupIndex + 1) * sponsorsPerGroup;
+            const groupSponsors = allSponsors.slice(startIdx, endIdx);
+
+            if (groupSponsors.length > 0) {
+                section.appendChild(buildSponsorTable(groupSponsors));
+                pageFragment.appendChild(section);
+            }
         }
 
-        wrapNicknamesInSpan();
+        container.appendChild(pageFragment);
         setupIntersectionObserver();
 
         if (sliderWrapper) {

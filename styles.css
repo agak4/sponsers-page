@@ -1,7 +1,16 @@
+/* ===== 테마 색상 설정 ===== */
+/* 적용 대상: #searchButton, #topButton, .highlight, #resultNavigation button */
+
+:root {
+    --accent-color: #7dbd74;
+}
+
+/* ===== 폰트 ===== */
+
 @font-face {
     font-family: 'Paperozi';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-2ExtraLight.woff2') format('woff2');
-    font-weight: 500;
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-3Light.woff2') format('woff2');
+    font-weight: 300;
     font-display: swap;
 }
 
@@ -166,7 +175,7 @@ body {
     padding: 10px 20px;
     font-family: Paperozi;
     font-size: 16px;
-    background-color: #FFB9D2;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: 0 4px 4px 0;
@@ -200,7 +209,7 @@ td {
 }
 
 .highlight {
-    background-color: #FFB9D2;
+    background-color: var(--accent-color);
     color: white;
 }
 
@@ -240,7 +249,7 @@ td {
 
 #resultNavigation button {
     padding: 5px 10px;
-    background-color: #FFB9D2;
+    background-color: var(--accent-color);
     font-family: Paperozi;
     color: white;
     border: none;
@@ -272,7 +281,7 @@ td {
     border: none;
     outline: none;
     background-color: white;
-    color: #FFB9D2;
+    color: var(--accent-color);
     cursor: pointer;
     border-radius: 50%;
     font-size: 16px;
@@ -385,6 +394,23 @@ td {
     50% {
         transform: translateY(0);
     }
+}
+
+/* ===== 푸터 ===== */
+
+#pageFooter {
+    background-color: #f9f9f9;
+    padding: 40px 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.footer-content p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #888;
+    word-break: keep-all;
 }
 
 @keyframes fadeIn {
